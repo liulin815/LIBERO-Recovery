@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIBERO-Recover — Beyond Task Success Towards Failure Recovery</title>
+  <meta name="description" content="LIBERO-Recover: a large-scale benchmark and paired human-recovery dataset for failure recovery in robotic manipulation, built from naturally occurring failures of SOTA VLA / WAM policies.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='4' fill='%230071e3'/><path d='M6.5 4.5l5.5 3.5-5.5 3.5z' fill='white'/></svg>">
+</head>
+<body>
+
+<div class="scroll-progress" aria-hidden="true"><i id="scrollBar"></i></div>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="top">
+  <div class="header-inner">
+    <a class="brand" href="#top"><span class="brand-dot"></span>LIBERO-<b>Recover</b></a>
+    <nav class="header-nav" aria-label="Sections">
+      <a href="#overview">Abstract</a>
+      <a href="#levels">Levels</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#statistics">Statistics</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#results">Results</a>
+      <a href="#citation">Citation</a>
+    </nav>
+    <div class="header-end">
+      <a class="hbtn" href="#" title="Code release coming soon">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Code <span class="hbtn-tag">soon</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="landing">
+
+<!-- ================= HERO ================= -->
+<section class="hero-band">
+  <div class="hero-reel" id="heroReel" aria-hidden="true">
+    <div class="reel-row" data-dir="left" style="--dur:88s">
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000000.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000045.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000135.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000150.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000227.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000506.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000681.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_000908.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+    </div>
+    <div class="reel-row" data-dir="right" style="--dur:104s">
+      <div class="reel-tile"><video src="assets/videos/demos/ep_001362.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_002250.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_002271.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile"><video src="assets/videos/demos/ep_002725.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile lv" style="--tone:var(--l1)"><video src="assets/videos/levels/l1.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile lv" style="--tone:var(--l2)"><video src="assets/videos/levels/l2.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile lv" style="--tone:var(--l3)"><video src="assets/videos/levels/l3.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="reel-tile lv" style="--tone:var(--l4)"><video src="assets/videos/levels/l4.mp4" muted loop playsinline preload="none" disablepictureinpicture></video></div>
+    </div>
+  </div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+
+  <div class="lp-inner hero-copy">
+    <div class="hero-badges">
+      <span class="vbadge"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 1l2 4.2 4.6.6-3.4 3.2.9 4.5L8 11.3 3.9 13.5l.9-4.5L1.4 5.8 6 5.2z"/></svg>ICLR 2027 Submission</span>
+      <span class="vbadge">Benchmark &amp; Dataset</span>
+      <span class="vbadge">2,178 recovery scenarios</span>
+    </div>
+
+    <h1 class="hero-title">LIBERO-<span class="hl">Recover</span></h1>
+    <p class="hero-tag">Beyond Task Success — Towards <b>Failure Recovery</b> in Robotic Manipulation Models</p>
+
+    <div class="hero-authors">
+      <p class="hero-author-names">Anonymous Author(s)</p>
+      <p class="hero-affil">Anonymized for double-blind review</p>
+      <div class="hero-venue-row">
+        <span class="vbadge subtle"><span class="pulse-dot"></span>Under review</span>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a class="btn primary" href="#" title="Preprint coming soon">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5.5L9.5 0H4zm5 1.5L13.5 6H9V1.5zM4.5 8h7v1.2h-7V8zm0 2.8h7V12h-7v-1.2z"/></svg>
+        Paper <span class="btn-tag">soon</span></a>
+      <a class="btn" href="#" title="Code release coming soon">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5.5 0L0 8l5.5 8H8L2.5 8 8 0H5.5zm5 0L5 8l5.5 8H13L7.5 8 13 0h-2.5z"/></svg>
+        Code <span class="btn-tag">soon</span></a>
+      <a class="btn" href="#" title="Dataset release coming soon">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 1C4.1 1 1 2.3 1 4v8c0 1.7 3.1 3 7 3s7-1.3 7-3V4c0-1.7-3.1-3-7-3zm0 1.5c3.3 0 5.5 1 5.5 1.5S11.3 5.5 8 5.5 2.5 4.5 2.5 4 4.7 2.5 8 2.5zM2.5 5.9C3.9 6.6 5.8 7 8 7s4.1-.4 5.5-1.1V8c0 .5-2.2 1.5-5.5 1.5S2.5 8.5 2.5 8V5.9zm0 4C3.9 10.6 5.8 11 8 11s4.1-.4 5.5-1.1V12c0 .5-2.2 1.5-5.5 1.5S2.5 12.5 2.5 12V9.9z"/></svg>
+        Dataset <span class="btn-tag">soon</span></a>
+      <a class="btn ghost" href="#citation">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h4v-1.3h-4a.2.2 0 0 1-.2-.2v-9a.2.2 0 0 1 .2-.2h4V2h-4zM10.5 2l4 4v8a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h1zm-.2 1.4V6h2.4l-2.4-2.6z"/></svg>
+        Cite</a>
+    </div>
+
+    <div class="hero-metrics">
+      <div class="hm"><b>2,178</b><span>recovery scenarios<br>from real failures</span></div>
+      <div class="hm"><b>130</b><span>subtasks across<br>4 LIBERO suites</span></div>
+      <div class="hm"><b>4</b><span>recovery levels<br>L1 → L4</span></div>
+      <div class="hm"><b>16</b><span>evaluation<br>dimensions</span></div>
+      <div class="hm"><b>3,184</b><span>human recovery demos<br>4 teleoperators</span></div>
+      <div class="hm"><b>625,731</b><span>frames @ 20 Hz<br>third-person + wrist</span></div>
+    </div>
+  </div>
+  <div class="hero-caret" aria-hidden="true"><svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l5 5 5-5"/></svg></div>
+</section>
+
+<!-- ================= 01 ABSTRACT ================= -->
+<section class="band" id="overview">
+  <div class="lp-inner">
+    <div class="eyebrow"><span class="e-no">01</span><span class="e-label">Abstract</span><span class="e-rule"></span></div>
+    <h2 class="band-title">From <i>“Can the robot succeed?”</i> to <i>“Can it recover after failure?”</i></h2>
+
+    <div class="abstract-card reveal">
+      <p>Vision-Language-Action (VLA) and World Action models have recently demonstrated remarkable performance in robotic manipulation. On LIBERO, state-of-the-art methods have achieved nearly 100% success rates, seemingly suggesting that the models are ready for deployment in the real world. However, near-perfect performance on existing benchmarks can be misleading: success under ideal conditions does not imply real-world robustness. Existing benchmarks primarily evaluate task completion from predefined initial states, while real-world interactions inevitably involve failures such as failed grasps, collisions, and unintended object movements. A robot must therefore not only execute tasks successfully, but also recognize and recover from failures to continue the task. Yet this capability remains largely unmeasured, revealing a critical gap between benchmark performance and real-world reliability. To address this gap, we introduce <b>LIBERO-Recover</b>, a large-scale benchmark for failure recovery in robotic manipulation. Built upon LIBERO, we collect real execution failures from SOTA embodied models and construct 2,000+ scenarios across four recovery levels: (1) Action Retry, (2) Action Adaptation, (3) Object State Recovery, and (4) Environmental Recovery. We evaluate four core capabilities: spatial understanding, object structure reasoning, interaction understanding, and topological reasoning. As the first large-scale benchmark for embodied failure recovery, LIBERO-Recover shifts evaluation from <i>“Can the robot succeed?”</i> to <i>“Can the robot recover after failure?”</i>, promoting robust and generalizable embodied agents.</p>
+    </div>
+
+    <figure class="figcard wide reveal">
+      <img src="assets/figures/taxonomy_showcase.png" alt="Four recovery difficulty levels of LIBERO-Recover, each shown as an execution strip from failure to recovery" loading="eager" fetchpriority="high">
+      <figcaption><b>Four recovery difficulty levels.</b> Every scenario is grounded in a failure that actually occurred during embodied-model execution — not a manually perturbed initial state. Each level demands progressively deeper state reasoning, from re-executing a failed action (L1) to restoring environmental states that block task completion (L4).</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= 02 LEVELS ================= -->
+<section class="band alt" id="levels">
+  <div class="lp-inner wide">
+    <div class="eyebrow"><span class="e-no">02</span><span class="e-label">Failure taxonomy</span><span class="e-rule"></span></div>
+    <h2 class="band-title">Four recovery levels, one selector</h2>
+    <p class="band-lede">Failures are organized into four progressive levels by the amount of state reasoning required to resume execution — from <b>action repetition</b>, to <b>action adaptation</b>, to <b>task-relevant object recovery</b>, and finally <b>environment recovery</b>. Pick a level to watch its full demonstration.</p>
+
+    <div class="lvl-widget" id="lvlWidget">
+      <div class="lvl-tabs" role="tablist" aria-label="Recovery levels">
+        <button class="lvl-tab is-active" role="tab" aria-selected="true" data-level="l1" style="--lvl-c:var(--l1)" id="tab-l1">
+          <span class="lvl-tab-id">L1</span>
+          <span class="lvl-tab-name">Action Retry</span>
+          <span class="lvl-tab-dist" aria-hidden="true"><i class="is-filled"></i><i></i><i></i><i></i></span>
+        </button>
+        <button class="lvl-tab" role="tab" aria-selected="false" data-level="l2" style="--lvl-c:var(--l2)" id="tab-l2">
+          <span class="lvl-tab-id">L2</span>
+          <span class="lvl-tab-name">Action Adaptation</span>
+          <span class="lvl-tab-dist" aria-hidden="true"><i class="is-filled"></i><i class="is-filled"></i><i></i><i></i></span>
+        </button>
+        <button class="lvl-tab" role="tab" aria-selected="false" data-level="l3" style="--lvl-c:var(--l3)" id="tab-l3">
+          <span class="lvl-tab-id">L3</span>
+          <span class="lvl-tab-name">Object State Recovery</span>
+          <span class="lvl-tab-dist" aria-hidden="true"><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i></i></span>
+        </button>
+        <button class="lvl-tab" role="tab" aria-selected="false" data-level="l4" style="--lvl-c:var(--l4)" id="tab-l4">
+          <span class="lvl-tab-id">L4</span>
+          <span class="lvl-tab-name">Environmental Recovery</span>
+          <span class="lvl-tab-dist" aria-hidden="true"><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i><i class="is-filled"></i></span>
+        </button>
+      </div>
+
+      <div class="lvl-stage" style="--lvl-c:var(--l1)">
+        <div class="lvl-stage-media" data-video>
+          <video class="lvl-video" data-for="l1" src="assets/videos/levels/l1.mp4" poster="assets/videos/levels/l1.jpg" muted loop playsinline preload="metadata"></video>
+          <video class="lvl-video" data-for="l2" src="assets/videos/levels/l2.mp4" poster="assets/videos/levels/l2.jpg" muted loop playsinline preload="none" hidden></video>
+          <video class="lvl-video" data-for="l3" src="assets/videos/levels/l3.mp4" poster="assets/videos/levels/l3.jpg" muted loop playsinline preload="none" hidden></video>
+          <video class="lvl-video" data-for="l4" src="assets/videos/levels/l4.mp4" poster="assets/videos/levels/l4.jpg" muted loop playsinline preload="none" hidden></video>
+          <span class="play-badge">▶</span>
+          <span class="speed-badge">Hover / click to play</span>
+        </div>
+
+        <div class="lvl-stage-info">
+          <span class="lvl-stage-badge" id="lvlBadge">L1 · Action Retry</span>
+          <h3 class="lvl-stage-name" id="lvlName">The plan still holds</h3>
+          <p class="lvl-stage-blurb" id="lvlBlurb">The failure does not materially alter the task configuration — <span class="mono">s<sub>f</sub> ≈ s<sub>expected</sub></span>. Recovery only requires retrying the failed action, such as re-attempting a grasp on an unchanged object.</p>
+          <div class="lvl-capability" id="lvlCap"><span class="cap-chip">closed-loop re-execution</span></div>
+          <div class="lvl-stage-stat">
+            <span class="lvl-stage-stat-v" id="lvlStatV">1 / 4</span>
+            <span class="lvl-stage-stat-l" id="lvlStatL">state-reasoning depth — how far the scene has drifted from the demonstration when recovery must begin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="defn reveal">
+      <h3>Failure, or just a state variation?</h3>
+      <p>Not every state change during execution constitutes a failure. A state <span class="mono">s<sub>f</sub></span> is a <b>failure state</b> when the preceding action induces a task-relevant change that invalidates the current execution plan — and it must nevertheless remain recoverable:</p>
+      <div class="formula">𝓕(s<sub>t</sub>, a<sub>t</sub>, s<sub>f</sub>)  ⟺  <i>execution-induced</i> ( s<sub>t</sub> →<sup>a<sub>t</sub></sup> s<sub>f</sub> )  ∧  <i>task-relevant</i> ( 𝓖(s<sub>f</sub>, l) = 0 )  ∧  <i>plan-invalidating</i> ( π<sub>θ</sub>(s<sub>f</sub>) ⇏ 𝓖 )</div>
+      <div class="formula">recoverable  ⟺  ∃ π<sub>rec</sub>  s.t.  s<sub>f</sub> →<sup>π<sub>rec</sub></sup> s<sub>T</sub>,  𝓖(s<sub>T</sub>, l) = 1</div>
+      <p style="margin-top:12px">State changes that preserve task executability are treated as normal variations; execution-induced changes that invalidate the plan and require recovery are treated as failures.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 PIPELINE ================= -->
+<section class="band" id="pipeline">
+  <div class="lp-inner wide">
+    <div class="eyebrow"><span class="e-no">03</span><span class="e-label">Benchmark construction</span><span class="e-rule"></span></div>
+    <h2 class="band-title">Recovery scenario construction pipeline</h2>
+    <p class="band-lede">Each scenario is defined as <span class="mono">(𝓘, s₀, τ<sub>fail</sub>, s<sub>f</sub>, g, r)</span> — instruction, initial state, failure trajectory, failure state, goal, and required recovery behavior. No objects, environment states, or initial configurations are manually perturbed, and no failures are injected.</p>
+
+    <div class="pipeline">
+      <div class="stage reveal">
+        <div class="stage-no">Stage 1</div>
+        <h3>Task execution</h3>
+        <p>Start from four LIBERO task suites covering 130 subtasks, preserving original instructions and initial configurations. SOTA embodied policies are deployed purely as <b>failure generators</b> — executed to expose diverse failure trajectories, not as benchmark baselines. Each execution produces a complete failure trajectory, rendered to video.</p>
+        <div class="chips">
+          <span class="chip">π₀</span><span class="chip">π₀.₅</span><span class="chip">π₀-FAST</span>
+          <span class="chip">GR00T</span><span class="chip">Wan-Policy</span><span class="chip">Cosmos-Policy</span>
+        </div>
+        <span class="stage-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-no">Stage 2</div>
+        <h3>Failure localization</h3>
+        <p>A VLM analyzes each execution video together with the task instruction to temporally localize where the execution deviates from the intended progression. The video is decomposed into <b>pre-failure / failure / post-failure</b> stages; from the predicted boundaries, the simulator yields the localized transition <span class="mono">(s<sub>t</sub>, a<sub>t</sub>, s<sub>f</sub>)</span> — identifying the failure-causing interaction itself, not just the final state.</p>
+        <div class="chips"><span class="chip">Qwen3.5-27B-Instruct</span><span class="chip">V = V<sub>pre</sub> ∪ V<sub>fail</sub> ∪ V<sub>post</sub></span></div>
+        <span class="stage-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-no">Stage 3</div>
+        <h3>Failure characterization</h3>
+        <p>Each candidate failure is characterized along object poses &amp; identities, object states, robot and gripper states, interaction relations, task progress, and environmental states. The VLM then assigns the required <b>recovery type and difficulty level</b> (L1–L4), producing a recoverable failure scenario with preserved instruction and temporal context.</p>
+        <div class="chips"><span class="chip">6 observation families</span><span class="chip">L1–L4 assignment</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 STATISTICS ================= -->
+<section class="band alt" id="statistics">
+  <div class="lp-inner wide">
+    <div class="eyebrow"><span class="e-no">04</span><span class="e-label">Benchmark statistics</span><span class="e-rule"></span></div>
+    <h2 class="band-title">2,178 scenarios, distributed as models actually fail</h2>
+    <p class="band-lede">The four recovery levels exhibit an inherently imbalanced distribution — higher-difficulty failures occur less frequently. This distribution emerges naturally from real model executions and is preserved without manual rebalancing. Notably, the proportion of post-task-failure cases grows with difficulty: models lacking recovery capability repeatedly retry failed actions, often with progressively more severe consequences.</p>
+
+    <figure class="figcard reveal">
+      <img src="assets/figures/benchmark_heatmap.png" alt="Distribution of LIBERO-Recover scenarios across task suites and recovery difficulty levels" loading="lazy">
+      <figcaption><b>Distribution of LIBERO-Recover scenarios</b> across task suites and recovery difficulty levels. The nested breakdown shows scenario counts per suite (LIBERO-Spatial / Object / Goal / 100) and recovery level, with the proportion of post-task-failure cases rising from L1 to L4.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= 05 DATASET ================= -->
+<section class="band" id="dataset">
+  <div class="lp-inner wide">
+    <div class="eyebrow"><span class="e-no">05</span><span class="e-label">Recovery dataset</span><span class="e-rule"></span></div>
+    <h2 class="band-title">3,184 human recovery demonstrations</h2>
+    <p class="band-lede">To improve models' failure-recovery capability, four human teleoperators collected recovery trajectories with a SpaceMouse across <b>413 failure scenarios</b>, uniformly sampled from the five evaluation suites to match the benchmark distribution. The resulting LeRobot-format dataset provides third-person and wrist-camera videos with joint states and end-effector actions at 20&nbsp;Hz.</p>
+
+    <div class="hero-metrics tight reveal">
+      <div class="hm"><b>3,184</b><span>episodes</span></div>
+      <div class="hm"><b>625,731</b><span>frames</span></div>
+      <div class="hm"><b>110</b><span>task types</span></div>
+      <div class="hm"><b>4</b><span>teleoperators</span></div>
+      <div class="hm"><b>2</b><span>camera views<br>third-person + wrist</span></div>
+    </div>
+
+    <div class="suite-grid">
+      <div class="suite-card reveal" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face front">
+            <div class="suite-media" data-video>
+              <video src="assets/videos/demos/ep_002250.mp4" poster="assets/videos/demos/ep_002250.jpg" muted loop playsinline preload="metadata"></video>
+              <span class="play-badge">▶</span>
+            </div>
+            <div class="suite-label"><b>LIBERO-Spatial</b><span>10 subtasks</span></div>
+          </div>
+          <div class="flip-face back">
+            <b class="back-title">LIBERO-Spatial</b>
+            <p>Spatial-relation instructions: which one of several identical objects to manipulate, identified by position.</p>
+            <ul class="tasklist">
+              <li>Pick the black bowl between the plate and the ramekin, place it on the plate</li>
+              <li>Pick the black bowl in the top layer of the wooden cabinet</li>
+              <li>Pick the black bowl on the cookies box, place it on the plate</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="suite-card reveal" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face front">
+            <div class="suite-media" data-video>
+              <video src="assets/videos/demos/ep_000227.mp4" poster="assets/videos/demos/ep_000227.jpg" muted loop playsinline preload="metadata"></video>
+              <span class="play-badge">▶</span>
+            </div>
+            <div class="suite-label"><b>LIBERO-Object</b><span>10 subtasks</span></div>
+          </div>
+          <div class="flip-face back">
+            <b class="back-title">LIBERO-Object</b>
+            <p>Object-identity instructions: everyday grocery objects to pick and stow.</p>
+            <ul class="tasklist">
+              <li>Pick up the ketchup and put it in the basket</li>
+              <li>Pick the alphabet soup and place it in the basket</li>
+              <li>Pick the butter and place it in the basket</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="suite-card reveal" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face front">
+            <div class="suite-media" data-video>
+              <video src="assets/videos/demos/ep_000045.mp4" poster="assets/videos/demos/ep_000045.jpg" muted loop playsinline preload="metadata"></video>
+              <span class="play-badge">▶</span>
+            </div>
+            <div class="suite-label"><b>LIBERO-Goal</b><span>10 subtasks</span></div>
+          </div>
+          <div class="flip-face back">
+            <b class="back-title">LIBERO-Goal</b>
+            <p>Goal-conditioned manipulation: drawer, cabinet and appliance sequences.</p>
+            <ul class="tasklist">
+              <li>Open the top drawer of the cabinet and put the bowl in it</li>
+              <li>Open the middle layer of the drawer</li>
+              <li>Put both the alphabet soup and the tomato sauce in the basket</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="suite-card reveal" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face front">
+            <div class="suite-media" data-video>
+              <video src="assets/videos/demos/ep_000135.mp4" poster="assets/videos/demos/ep_000135.jpg" muted loop playsinline preload="metadata"></video>
+              <span class="play-badge">▶</span>
+            </div>
+            <div class="suite-label"><b>LIBERO-100</b><span>100 subtasks</span></div>
+          </div>
+          <div class="flip-face back">
+            <b class="back-title">LIBERO-100</b>
+            <p>Long-horizon everyday tasks mixing all of the above skills.</p>
+            <ul class="tasklist">
+              <li>Put the black bowl in the top drawer of the cabinet</li>
+              <li>Put the moka pot on the stove</li>
+              <li>Turn on the stove and put the frying pan on it</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="suite-hint">Hover (or tap) a card to flip it · hover a video to play</p>
+
+    <div class="explorer-filter" role="group" aria-label="Filter demo episodes by suite">
+      <span class="filter-pill active" data-suite="all">All suites</span>
+      <span class="filter-pill" data-suite="spatial">Spatial</span>
+      <span class="filter-pill" data-suite="object">Object</span>
+      <span class="filter-pill" data-suite="goal">Goal</span>
+      <span class="filter-pill" data-suite="l100">100</span>
+    </div>
+
+    <div class="demo-grid">
+      <div class="demo-card reveal" data-suite="l100">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000000.mp4" poster="assets/videos/demos/ep_000000.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Put the black bowl in the top drawer of the cabinet</div>
+          <div class="demo-meta"><span class="suite-tag">100</span><span>629 frames · 31.5s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="l100">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000135.mp4" poster="assets/videos/demos/ep_000135.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Put the moka pot on the stove</div>
+          <div class="demo-meta"><span class="suite-tag">100</span><span>350 frames · 17.5s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="l100">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000150.mp4" poster="assets/videos/demos/ep_000150.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Turn on the stove and put the frying pan on it</div>
+          <div class="demo-meta"><span class="suite-tag">100</span><span>184 frames · 9.2s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="l100">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000506.mp4" poster="assets/videos/demos/ep_000506.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Close the microwave</div>
+          <div class="demo-meta"><span class="suite-tag">100</span><span>197 frames · 9.9s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="goal">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000045.mp4" poster="assets/videos/demos/ep_000045.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Open the top drawer of the cabinet and put the bowl in it</div>
+          <div class="demo-meta"><span class="suite-tag">Goal</span><span>416 frames · 20.8s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="goal">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000681.mp4" poster="assets/videos/demos/ep_000681.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Open the middle layer of the drawer</div>
+          <div class="demo-meta"><span class="suite-tag">Goal</span><span>163 frames · 8.2s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="object">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000227.mp4" poster="assets/videos/demos/ep_000227.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick up the ketchup and put it in the basket</div>
+          <div class="demo-meta"><span class="suite-tag">Object</span><span>237 frames · 11.9s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="object">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_000908.mp4" poster="assets/videos/demos/ep_000908.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick the alphabet soup and place it in the basket</div>
+          <div class="demo-meta"><span class="suite-tag">Object</span><span>84 frames · 4.2s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="object">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_001362.mp4" poster="assets/videos/demos/ep_001362.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick the butter and place it in the basket</div>
+          <div class="demo-meta"><span class="suite-tag">Object</span><span>324 frames · 16.2s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="spatial">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_002250.mp4" poster="assets/videos/demos/ep_002250.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick the black bowl between the plate and the ramekin, place it on the plate</div>
+          <div class="demo-meta"><span class="suite-tag">Spatial</span><span>178 frames · 8.9s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="spatial">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_002271.mp4" poster="assets/videos/demos/ep_002271.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick the black bowl in the top layer of the wooden cabinet, place it on the plate</div>
+          <div class="demo-meta"><span class="suite-tag">Spatial</span><span>330 frames · 16.5s</span></div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal" data-suite="spatial">
+        <div class="video-box" data-video>
+          <video src="assets/videos/demos/ep_002725.mp4" poster="assets/videos/demos/ep_002725.jpg" muted loop playsinline preload="metadata"></video>
+          <span class="play-badge">▶</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-task">Pick the black bowl on the cookies box, place it on the plate</div>
+          <div class="demo-meta"><span class="suite-tag">Spatial</span><span>148 frames · 7.4s</span></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="reveal task-details">
+      <summary>Show all 78 task types in the recovery dataset →</summary>
+      <figure class="figcard scrollable">
+        <img src="assets/figures/task_overview.jpg" alt="Montage of all 78 task types in the LIBERO-Recover recovery dataset, one representative first frame each" loading="lazy">
+        <figcaption class="sticky-cap"><b>Task coverage.</b> One representative initial frame per task type in the recovery dataset (78 unique instruction types over 3,184 episodes).</figcaption>
+      </figure>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 06 METRICS ================= -->
+<section class="band alt" id="metrics">
+  <div class="lp-inner">
+    <div class="eyebrow"><span class="e-no">06</span><span class="e-label">Evaluation protocol</span><span class="e-rule"></span></div>
+    <h2 class="band-title">Three metrics, computed from execution only</h2>
+    <p class="band-lede">Failure recovery is evaluated in terms of task completion, performance degradation, and recovery efficiency, using only execution trajectories and task-success labels.</p>
+
+    <div class="metrics">
+      <div class="metric reveal">
+        <div class="m-name"><span class="m-abbr">RSR</span><span class="m-full">Recovery Success Rate</span></div>
+        <div class="formula">RSR = (1/N) Σ<sub>i</sub> 𝟙[ 𝓖(s<sup>i</sup><sub>T</sub>, l<sub>i</sub>) = 1 ]</div>
+        <p>Whether the policy completes the original task after entering a failure state. Reported overall and per level (RSR<sub>L1</sub> … RSR<sub>L4</sub>) to characterize the effect of recovery difficulty.</p>
+      </div>
+      <div class="metric reveal">
+        <div class="m-name"><span class="m-abbr">RD</span><span class="m-full">Recovery Degradation</span></div>
+        <div class="formula">RD = 1 − (M<sub>post</sub> + ε) / (M<sub>pre</sub> + ε)</div>
+        <p>How strongly a failure affects execution capability, measured across three temporal phases — pre-failure, during-failure, post-failure. Distinguishes models with similar final success but different degradation.</p>
+      </div>
+      <div class="metric reveal">
+        <div class="m-name"><span class="m-abbr">RC</span><span class="m-full">Recovery Consistency</span></div>
+        <div class="formula">RC = 1 − Std<sub>k</sub>(R<sub>k</sub>)</div>
+        <p>Stability of recovery across failure states within the same task, from the standard deviation of task-level recovery success rates. Higher RC indicates more consistent recovery behavior.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 RESULTS ================= -->
+<section class="band" id="results">
+  <div class="lp-inner wide">
+    <div class="eyebrow"><span class="e-no">07</span><span class="e-label">Experiments</span><span class="e-rule"></span></div>
+    <h2 class="band-title">Eight findings on failure recovery</h2>
+    <p class="band-lede">We evaluate six representative models — <b>OpenVLA-OFT</b>, <b>π₀-FAST</b>, <b>GR00T-N1.5</b>, <b>π₀</b>, <b>Wan2-Policy</b>, and <b>Cosmos-Predict2-Policy</b> — using official configurations; each task runs 10 trials with slight object-position perturbations and a 1.1× human-completion-time budget.</p>
+
+    <!-- figure deck -->
+    <div class="figdeck" id="figdeck">
+      <div class="figdeck-head">
+        <div class="figdeck-controls">
+          <button class="figdeck-arrow" id="deckPrev" type="button" aria-label="Previous figure">‹</button>
+          <span class="figdeck-counter" id="deckCounter">1 / 8</span>
+          <button class="figdeck-arrow" id="deckNext" type="button" aria-label="Next figure">›</button>
+        </div>
+      </div>
+      <div class="figdeck-rail" id="deckRail" role="tablist" aria-label="Figures"></div>
+
+      <div class="figdeck-panel is-active" data-panel="0">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 1</span><span class="ig-figure-title">LIBERO vs LIBERO-Recover</span></div>
+          <img src="assets/figures/libero_vs_recovery.png" alt="Per-model performance on standard LIBERO versus LIBERO-Recover across four suites" loading="lazy">
+          <p class="ig-figure-caption"><b>Success under ideal conditions does not imply robustness.</b> Bars compare each policy's success on predefined scenarios against recovery success from real failure states, across the four suites.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="1">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 2</span><span class="ig-figure-title">Multi-level evaluation</span></div>
+          <img src="assets/figures/performance_radar.png" alt="Multi-level evaluation of VLA and WAM models on LIBERO-Recover, per suite and recovery level" loading="lazy">
+          <p class="ig-figure-caption"><b>Local correction is easy, state recovery is hard.</b> Recovery success broken down per task suite and per recovery level L1–L4 for all six evaluated policies.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="2">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 3</span><span class="ig-figure-title">Progressive degradation</span></div>
+          <img src="assets/figures/progressive_degradation.png" alt="Progressive degradation across pre-failure, during-failure and post-failure phases for the four suites" loading="lazy">
+          <p class="ig-figure-caption"><b>Failure is a compounding distribution shift.</b> Success across the three temporal phases (pre-failure / during-failure / post-failure) for each suite, averaged over models and per model.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="3">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 4</span><span class="ig-figure-title">Recovery consistency</span></div>
+          <img src="assets/figures/rc_stability.png" alt="Recovery consistency of WAM policies versus conventional VLAs" loading="lazy">
+          <p class="ig-figure-caption"><b>World-action policies recover more consistently.</b> RC per suite and overall. WAM policies (right) exhibit more stable recovery than conventional VLA policies (left).</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="4">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 5</span><span class="ig-figure-title">Action chunk sweep</span></div>
+          <img src="assets/figures/chunk_sweep.png" alt="Recovery success versus action chunk size across the four LIBERO suites" loading="lazy">
+          <p class="ig-figure-caption"><b>Smaller chunks, better recovery.</b> Recovery success versus chunk size (4 → 32) for the four suites; finer action granularity yields more frequent state feedback.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="5">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Finding 8</span><span class="ig-figure-title">Action-state density (KDE)</span></div>
+          <img src="assets/figures/action_density_3d.png" alt="3D action-state density estimation comparing LIBERO and LIBERO-Recover" loading="lazy">
+          <p class="ig-figure-caption"><b>Recovery concentrates near critical states.</b> LIBERO-Recover (right) concentrates around grasping, placing and interaction states; standard LIBERO demonstrations (left) spread over a wider workspace.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="6">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Dataset</span><span class="ig-figure-title">Scale among robot datasets</span></div>
+          <img src="assets/figures/dataset_comparison.png" alt="Scale comparison of LIBERO-Recover against representative robot manipulation datasets" loading="lazy">
+          <p class="ig-figure-caption"><b>Paired recovery data at benchmark scale.</b> Episodes vs frames among representative robot-manipulation datasets; bubble size encodes the number of tasks. LIBERO-Recover contributes 3,184 episodes / 625,731 frames / 110 task types of human recovery demonstrations.</p>
+        </div>
+      </div>
+      <div class="figdeck-panel" data-panel="7">
+        <div class="ig-figure">
+          <div class="ig-figure-head"><span class="ig-figure-tag">Benchmark</span><span class="ig-figure-title">Timeline of manipulation benchmarks</span></div>
+          <img src="assets/figures/benchmark_gantt.png" alt="Timeline comparison of robot-manipulation benchmarks; LIBERO-Recover is the first dedicated to failure recovery" loading="lazy">
+          <p class="ig-figure-caption"><b>First benchmark dedicated to execution-born failures.</b> From LIBERO, SimplerEnv, RoboCasa, and RoboTwin to LIBERO-Plus / -Pro / -X / -Safety, prior work evaluates task completion under <i>manually predefined</i> distribution shifts; LIBERO-Recover targets failures that arise <i>naturally during execution</i>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- findings cards -->
+    <div class="findings">
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">1</span>
+          <h3>Success in predefined scenarios does not guarantee robustness to real failures</h3>
+        </div>
+        <p>All models suffer <b>over 50% performance drops</b> when exposed to naturally occurring failures. Rankings on standard benchmarks do not transfer: Wan2-Policy outperforms GR00T-N1.5 by <b class="pos">+14.40%</b> on LIBERO-100, yet falls <b class="neg">−5.0%</b> behind it under corresponding failures; π₀ and π₀-FAST show similar reversals on LIBERO-Spatial. Standard benchmark rankings are poor predictors of recovery capability.</p>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">2</span>
+          <h3>Models excel at local correction but struggle with state recovery</h3>
+        </div>
+        <p>All models achieve substantially higher success on <b>L1/L2</b> than on <b>L3/L4</b>, decreasing monotonically with difficulty. L1/L2 can often be solved by adapting the next action from visual observations, whereas L3/L4 require structured reasoning about object states, spatial relations, interaction dependencies, and scene memory. The gap between L2 and L3 marks the unresolved transition from <i>action-level correction</i> to <i>state-level recovery</i>.</p>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">3</span>
+          <h3>Failures induce compounding distribution shifts</h3>
+        </div>
+        <p>Averaged across models, success drops <b>15.0% → 6.7%</b> on LIBERO-Spatial, <b>35.5% → 4.0%</b> on LIBERO-Goal, <b>38.3% → 5.0%</b> on LIBERO-Object, and <b>26.2% → 0.3%</b> on LIBERO-100 — recovery degradation rates of 51.7%, 87.3%, 88.7%, and 97.7%. Performance keeps decreasing from the failure stage to the post-failure stage: repeated unsuccessful interactions drive execution into increasingly unfamiliar states.</p>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">4</span>
+          <h3>World-action policies recover more consistently than VLAs</h3>
+        </div>
+        <p>WAM policies reach higher Recovery Consistency — <b>Cosmos-Predict2-Policy 0.884</b> and <b>Wan2-Policy 0.870</b>, versus 0.749–0.798 for conventional VLAs. A possible explanation: VLAs primarily imitate actions from successful trajectories, while world-model-based policies explicitly model action-conditioned state transitions, providing a stronger inductive bias for adapting to unexpected failure states.</p>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">5</span>
+          <h3>Smaller action chunks improve recovery</h3>
+        </div>
+        <p>Across all four subsets, recovery success consistently degrades as the action chunk size grows from <b>4 to 32</b>, with the largest drops at bigger chunks — shared across policies. Longer chunks commit the robot to a sequence before the next policy update, making it harder to correct failure-induced deviations. Effective recovery requires not only a capable policy but also fine-grained closed-loop control.</p>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">8</span>
+          <h3>Recovery concentrates in a narrower state distribution</h3>
+        </div>
+        <p>KDE analysis over end-effector action densities shows LIBERO-Recover exhibits a <b>more concentrated state distribution</b> with several distinct high-density regions, while the original LIBERO data covers a more dispersed workspace. Failures concentrate around a limited number of critical states — grasping, placing, object interaction — so recovery data supplies concentrated supervision around the critical state-transition regions that are underrepresented in standard demonstrations.</p>
+      </div>
+    </div>
+
+    <!-- findings 6+7 with tables -->
+    <div class="find-pair">
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">6</span>
+          <h3>Recovery training does not transfer to standard execution</h3>
+        </div>
+        <p>Jointly training on LIBERO + LIBERO-Recover consistently improves <b>recovery</b> success (GR00T-N1.5 17.8% → 21.2%; OpenVLA-OFT 20.8% → 25.4%) but yields little or even negative change on <b>standard LIBERO</b> (86.5% → 87.2%; 97.1% → 96.6%). Exposing a policy to failure states is not sufficient to make it recover from its <i>own</i> execution errors — effective recovery may also require recognizing failures as they emerge online.</p>
+        <div class="table-card">
+          <p class="t-caption">Success rate with and without recovery data (Combined).</p>
+          <table class="data">
+            <thead>
+              <tr><th>Method</th><th>Condition</th><th>Spatial</th><th>Object</th><th>Goal</th><th>100</th></tr>
+            </thead>
+            <tbody>
+              <tr class="group-row"><td colspan="6">Standard LIBERO</td></tr>
+              <tr><td>GR00T-N1.5</td><td>base</td><td>0.920</td><td>0.920</td><td>0.860</td><td>0.760</td></tr>
+              <tr class="delta"><td>GR00T-N1.5</td><td>+ Combined</td><td>0.931</td><td>0.905</td><td>0.882</td><td>0.770</td></tr>
+              <tr><td>OpenVLA-OFT</td><td>base</td><td>0.976</td><td>0.984</td><td>0.979</td><td>0.945</td></tr>
+              <tr class="delta"><td>OpenVLA-OFT</td><td>+ Combined</td><td>0.982</td><td>0.994</td><td>0.970</td><td>0.916</td></tr>
+              <tr class="group-row"><td colspan="6">LIBERO-Recover</td></tr>
+              <tr><td>GR00T-N1.5</td><td>base</td><td>0.057</td><td>0.260</td><td>0.263</td><td>0.133</td></tr>
+              <tr class="delta"><td>GR00T-N1.5</td><td>+ Combined</td><td>0.116</td><td>0.262</td><td>0.264</td><td>0.206</td></tr>
+              <tr><td>OpenVLA-OFT</td><td>base</td><td>0.156</td><td>0.326</td><td>0.246</td><td>0.103</td></tr>
+              <tr class="delta"><td>OpenVLA-OFT</td><td>+ Combined</td><td>0.178</td><td>0.333</td><td>0.270</td><td>0.236</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="finding reveal">
+        <div class="finding-head"><span class="f-no">7</span>
+          <h3>Temporal context improves failure recovery</h3>
+        </div>
+        <p>Providing the task's initial frame as temporal context consistently improves recovery, most strongly in harder settings: OpenVLA-OFT improves from 20.8% to <b>26.8%</b> on average — including <b>10.3% → 24.7%</b> on LIBERO-100 and 24.6% → 30.0% on LIBERO-Goal; GR00T-N1.5 improves 17.8% → 18.9%. The initial frame anchors a comparison between current and intended scene, letting the policy infer <i>what the failure disrupted</i>.</p>
+        <div class="table-card">
+          <p class="t-caption">Recovery success with and without temporal context.</p>
+          <table class="data">
+            <thead>
+              <tr><th>Method</th><th>Condition</th><th>Spatial</th><th>Object</th><th>Goal</th><th>100</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>GR00T-N1.5</td><td>base</td><td>0.057</td><td>0.260</td><td>0.263</td><td>0.133</td></tr>
+              <tr class="delta"><td>GR00T-N1.5</td><td>+ temporal</td><td>0.066</td><td>0.260</td><td>0.264</td><td>0.166</td></tr>
+              <tr><td>OpenVLA-OFT</td><td>base</td><td>0.156</td><td>0.326</td><td>0.246</td><td>0.103</td></tr>
+              <tr class="delta"><td>OpenVLA-OFT</td><td>+ temporal</td><td>0.193</td><td>0.333</td><td>0.300</td><td class="best">0.247</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 08 CITATION ================= -->
+<section class="band alt" id="citation">
+  <div class="lp-inner">
+    <div class="eyebrow"><span class="e-no">08</span><span class="e-label">Citation</span><span class="e-rule"></span></div>
+    <h2 class="band-title">Cite this work</h2>
+
+    <div class="bibtex-box reveal">
+      <button class="copy-btn" id="copyBibtex" type="button">Copy BibTeX</button>
+<pre id="bibtex">@inproceedings{liberorecover2027,
+  title     = {LIBERO-Recover: Beyond Task Success Towards Failure
+               Recovery in Robotic Manipulation Models},
+  author    = {Anonymous},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2027},
+  note      = {Under double-blind review}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="lp-footer">
+  <div class="lp-inner">
+    <div class="foot-levels">
+      <span><i style="background:var(--l1)"></i>L1 · Action Retry</span>
+      <span><i style="background:var(--l2)"></i>L2 · Action Adaptation</span>
+      <span><i style="background:var(--l3)"></i>L3 · Object State Recovery</span>
+      <span><i style="background:var(--l4)"></i>L4 · Environmental Recovery</span>
+    </div>
+    <p>LIBERO-Recover — from <i>“Can the robot succeed?”</i> to <i>“Can the robot recover after failure?”</i></p>
+    <p>Built on <a href="https://libero-project.github.io/" rel="noopener">LIBERO</a>. Videos rendered from simulation rollouts and human teleoperation; site for research communication.</p>
+  </div>
+</footer>
+
+<script src="js/main.js?v=2" defer></script>
+</body>
+</html>
