@@ -1,0 +1,8 @@
+# Normalize text files to LF (web content); never touch binaries.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.ico binary
+*.woff binary
+*.woff2 binary
