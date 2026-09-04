@@ -7,7 +7,11 @@
   <meta name="description" content="LIBERO-Recover: a large-scale benchmark and paired human-recovery dataset for failure recovery in robotic manipulation, built from naturally occurring failures of SOTA VLA / WAM policies.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Webfont loads async (media="print" → swap): a hanging fonts.googleapis.com
+       connection must never block first paint — visitors on networks where it is
+       unreachable get the system font stack instantly instead of a white page. -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="css/style.css?v=2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='4' fill='%230071e3'/><path d='M6.5 4.5l5.5 3.5-5.5 3.5z' fill='white'/></svg>">
 </head>
