@@ -1,0 +1,73 @@
+run_id: starvla_leworld
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl, wandb]
+wandb_entity: your_wandb_entity
+wandb_project: llavavla
+is_debug: false
+
+
+framework:
+  name: QwenOFTLeWorldV2Robo
+  pretrained_checkpoint: /H20_vepfs/liulin/starVLA/VLA_models/Qwen3-VL-OFT-RoboTwin2-All/checkpoints/steps_140000_pytorch_model.pt
+  freeze_qwenfast: False #True
+  singlewm:
+    checkpoint_path: /H20_vepfs/liulin/starVLA/results/Checkpoints_robo_WM/0129_robotwin_lerobot_mix_success_failure_qwen3OFT_WM/checkpoints/steps_70000_pytorch_model.pt
+    config_dir: /H20_vepfs/liulin/starVLA/results/Checkpoints_robo_WM/0129_robotwin_lerobot_mix_success_failure_qwen3OFT_WM
+    freeze: False
+    enable: True
+  action_model:
+    action_dim: 14
+    state_dim: 14
+    future_action_window_size: 49
+    action_horizon: 50
+  
+
+datasets:
+  vla_data:
+    dataset_py: lerobot_datasets
+    include_state: false
+    data_root_dir: playground/Datasets/RoboTwin
+    data_mix: robotwin # bridge_rt_1
+    action_type: abs_qpos
+    per_device_batch_size: 16
+    load_all_data_for_training: true
+    obs_image_size: [224, 224]
+    video_backend: torchvision_av
+
+
+trainer:
+  epochs: 100
+  max_train_steps: 100000
+  num_warmup_steps: 0
+  save_interval: 5000
+  eval_interval: 100
+  learning_rate:
+    base: 2.5e-05
+    qwenfast_model: 1.0e-05
+    leworld_model: 5.0e-5
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-06
+  freeze_modules: ''
+  loss_scale:
+    vla: 1.0
+  max_grad_norm: 1.0
+  warmup_ratio: 0.1
+  weight_decay: 0.0
+  logging_frequency: 10
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+
+  # parameters to be determined
+  is_resume: false
+  resume_epoch: null
+  resume_step: null
+  enable_gradient_checkpointing: true
+  enable_mixed_precision_training: true

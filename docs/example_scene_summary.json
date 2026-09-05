@@ -1,0 +1,43 @@
+{
+  "scene_dir": "/H20_vepfs/liulin/starVLA/assets/scenes/selected_bddl_scenes_10",
+  "num_scenes_requested": 30,
+  "num_discovered": 207,
+  "num_evaluated": 30,
+  "trials_per_scene": 10,
+  "num_close_trials": 5,
+  "num_open_trials": 5,
+  "obj_noise_xy": 0.02,
+  "total_episodes": 300,
+  "total_successes": 54,
+  "overall_rate": 0.18,
+  "close_episodes": 150,
+  "close_successes": 26,
+  "close_rate": 0.17333333333333334,
+  "open_episodes": 150,
+  "open_successes": 28,
+  "open_rate": 0.18666666668,
+  "scenes": [
+    {
+      "scene": "open_the_middle_drawer_of_the_cabinet__episode_005__step_0260",
+      "task": "open the middle layer of the drawer",
+      "episodes": 10,
+      "successes": 6,
+      "rate": 0.6,
+      "close_episodes": 5,
+      "close_successes": 3,
+      "open_episodes": 5,
+      "open_successes": 3
+    },
+    {
+      "scene": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it__episode_001__step_0500",
+      "task": "turn on the stove and put the moka pot on it",
+      "episodes": 10,
+      "successes": 0,
+      "rate": 0.0,
+      "close_episodes": 5,
+      "close_successes": 0,
+      "open_episodes": 5,
+      "open_successes": 0
+    }
+  ]
+}

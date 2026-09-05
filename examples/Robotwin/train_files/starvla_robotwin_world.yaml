@@ -1,0 +1,81 @@
+run_id: starvla_leworld
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl, wandb]
+wandb_entity: your_wandb_entity
+wandb_project: llavavla
+is_debug: false
+
+
+framework:
+  name: SingleWMRobo
+  leworld_model_b1:
+    enable: true
+
+    encoder_scale: "large"  # Options: tiny, small, base, large
+    patch_size: 14
+    img_size: 224
+
+    history_size: 50  # Number of history frames for prediction
+    num_preds: 1     # Number of future frames to predict
+
+    embed_dim: 768
+    action_dim: 14
+    frameskip: 1
+
+    predictor:
+      depth: 6
+      heads: 16
+      mlp_dim: 2048
+      dim_head: 64
+      dropout: 0.1
+      emb_dropout: 0.0
+
+    # Loss weights for joint training
+    loss_weights:
+      world_model_loss: 1.0   # Weight for world model prediction loss
+      sigreg_loss: 0.09       # Weight for SIGReg regularization loss
+
+    # SIGReg regularizer configuration
+    sigreg:
+      knots: 17
+      num_proj: 1024
+
+datasets:
+  vla_data:
+    dataset_py: lerobot_datasets
+    include_state: false
+    data_root_dir: playground/Datasets/RoboTwin
+    data_mix: robotwin # bridge_rt_1
+    action_type: abs_qpos
+    per_device_batch_size: 16
+    load_all_data_for_training: true
+    obs_image_size: [224, 224]
+    video_backend: torchvision_av
+
+
+trainer:
+  max_train_steps: 1000000
+  num_warmup_steps: 5000
+  save_interval: 5000
+  eval_interval: 100
+  learning_rate:
+    base: 2.5e-05
+    leworld_model_b1: 5.0e-5
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 5.0e-07
+  freeze_modules: ''
+  loss_scale:
+    vla: 1.0
+  max_grad_norm: 1.0
+  weight_decay: 0.0
+  logging_frequency: 10
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" font-family="'Noto Sans', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect width="1000" height="660" fill="#ffffff"/>
+  <text x="40" y="44" font-size="22" font-weight="600" fill="#1d1d1f">Custom-scene evaluation pipeline</text>
+  <text x="40" y="68" font-size="13" fill="#6e6e73">One launcher · one active policy server per model · one eval client per model</text>
+
+  <!-- Launcher -->
+  <rect x="250" y="96" width="500" height="70" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+  <rect x="250" y="96" width="4" height="70" rx="2" fill="#0071e3"/>
+  <text x="500" y="126" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">Launcher — eval_libero_custom_scene.sh</text>
+  <text x="500" y="147" font-size="12" fill="#6e6e73" text-anchor="middle">port / GPU orchestration · warmup &amp; readiness · retries · aggregation</text>
+
+  <!-- arrow launcher -> servers -->
+  <line x1="500" y1="166" x2="500" y2="224" stroke="#6e6e73" stroke-width="1.5"/>
+  <path d="M500 224 l-5 -9 h10 z" fill="#6e6e73"/>
+  <text x="514" y="200" font-size="11.5" fill="#6e6e73">starts servers (conda run -n starvla) and waits until each is listening</text>
+
+  <!-- Active server -->
+  <rect x="110" y="226" width="300" height="92" rx="10" fill="#ffffff" stroke="#0071e3" stroke-width="1.5"/>
+  <text x="260" y="254" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">Policy server (active)</text>
+  <text x="260" y="276" font-size="12" fill="#6e6e73" text-anchor="middle">deployment/model_server/server_policy.py</text>
+  <text x="260" y="296" font-size="12" fill="#6e6e73" text-anchor="middle">conda: starvla · bf16 · GPU (round-robin)</text>
+  <text x="260" y="313" font-size="12" fill="#6e6e73" text-anchor="middle">port from BASE_PORT (default 9885+)</text>
+
+  <!-- Standby servers -->
+  <rect x="450" y="226" width="300" height="92" rx="10" fill="#ffffff" stroke="#d2d2d7" stroke-dasharray="5 4"/>
+  <text x="600" y="254" font-size="14" font-weight="600" fill="#6e6e73" text-anchor="middle">Server workers #2 … W</text>
+  <text x="600" y="276" font-size="12" fill="#6e6e73" text-anchor="middle">server_works_per_model per model</text>
+  <text x="600" y="296" font-size="12" fill="#6e6e73" text-anchor="middle">started warm; eval client attaches to</text>
+  <text x="600" y="313" font-size="12" fill="#6e6e73" text-anchor="middle">the model's first server</text>
+
+  <!-- x N models -->
+  <rect x="790" y="252" width="120" height="40" rx="20" fill="#f0f6fd" stroke="#0071e3" stroke-opacity="0.35"/>
+  <text x="850" y="277" font-size="12" fill="#0071e3" text-anchor="middle">× N models</text>
+
+  <!-- client <-> server -->
+  <line x1="230" y1="332" x2="230" y2="424" stroke="#0071e3" stroke-width="1.5"/>
+  <path d="M230 424 l-5 -9 h10 z" fill="#0071e3"/>
+  <path d="M230 332 l-5 9 h10 z" fill="#0071e3"/>
+  <text x="244" y="372" font-size="11.5" fill="#0071e3">WebSocket — {agentview + wrist image, language} → action</text>
+  <text x="244" y="389" font-size="11.5" fill="#6e6e73">host 127.0.0.1 : server port</text>
+
+  <!-- Eval client -->
+  <rect x="250" y="426" width="500" height="92" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+  <rect x="250" y="426" width="4" height="92" rx="2" fill="#0071e3"/>
+  <text x="500" y="454" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">Eval client — eval_libero_custom_scene.py</text>
+  <text x="500" y="476" font-size="12" fill="#6e6e73" text-anchor="middle">conda: libero · MuJoCo off-screen (EGL) · 256 × 256 agentview + wrist</text>
+  <text x="500" y="496" font-size="12" fill="#6e6e73" text-anchor="middle">loads .bddl + sim_state.npy · perturbs objects · close/open gripper split</text>
+
+  <!-- client -> outputs -->
+  <line x1="500" y1="518" x2="500" y2="556" stroke="#6e6e73" stroke-width="1.5"/>
+  <path d="M500 556 l-5 -9 h10 z" fill="#6e6e73"/>
+  <text x="514" y="542" font-size="11.5" fill="#6e6e73">writes per model</text>
+
+  <!-- Outputs -->
+  <rect x="110" y="558" width="640" height="74" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+  <text x="134" y="584" font-size="13" font-weight="600" fill="#1d1d1f">Outputs — $LOG_PATH / &lt;model&gt; / custom_scene /</text>
+  <rect x="134" y="596" width="150" height="24" rx="12" fill="#f0f6fd"/>
+  <text x="209" y="612" font-size="11" fill="#0071e3" text-anchor="middle">rollout videos</text>
+  <rect x="294" y="596" width="130" height="24" rx="12" fill="#f0f6fd"/>
+  <text x="359" y="612" font-size="11" fill="#0071e3" text-anchor="middle">scene_summary.json</text>
+  <rect x="434" y="596" width="170" height="24" rx="12" fill="#f0f6fd"/>
+  <text x="519" y="612" font-size="11" fill="#0071e3" text-anchor="middle">dataset/raw · manifest.jsonl</text>
+  <rect x="614" y="596" width="120" height="24" rx="12" fill="#f0f6fd"/>
+  <text x="674" y="612" font-size="11" fill="#0071e3" text-anchor="middle">eval_summary.txt</text>
+</svg>

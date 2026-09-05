@@ -1,0 +1,5 @@
+assets: /H20_vepfs/liulin/starVLA/LIBERO/libero/libero/./assets
+bddl_files: /H20_vepfs/liulin/starVLA/LIBERO/libero/libero/./bddl_files
+benchmark_root: /H20_vepfs/liulin/starVLA/LIBERO/libero/libero
+datasets: /H20_vepfs/liulin/starVLA/datasets/LEROBOT_LIBERO_DATA
+init_states: /H20_vepfs/liulin/starVLA/LIBERO/libero/libero/./init_files

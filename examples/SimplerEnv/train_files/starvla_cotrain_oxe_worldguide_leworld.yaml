@@ -1,0 +1,153 @@
+# QwenGR00TLeWorld on the SimplerEnv / OXE (bridge_rt_1) pipeline.
+# Port of starvla_cotrain_oxe_worldguide.yaml (QwenOFTLeWorldSim) onto the
+# QwenGR00T flow-matching backbone. Data/trainer sections follow the original;
+# the framework section swaps the OFT action-token wrapper for the plain
+# Qwen-VL interface + FlowmatchingActionHead.
+#
+# NOTE the 17-frame observation window (history_size + num_preds = 16 + 1)
+# already comes from the SimplerEnv data registry
+# (examples/SimplerEnv/train_files/data_registry/data_config.py, where
+# oxe_bridge / oxe_rt1 set observation_indices = list(range(17))): frames
+# 0..16 align with the 16-step action chunk — the first frame goes to the VLM,
+# the whole sequence to the world model.
+run_id: qwenact
+run_root_dir: results/Checkpoints
+seed: 42
+wandb_entity: your_wandb_entity
+wandb_project: llavavla
+is_debug: false
+version_id: "0.21"
+
+framework:
+  name: QwenGR00TLeWorld
+  qwenvl:
+    base_vlm: /H20_vepfs/liulin/starVLA/playground/Pretrained_models/Qwen3-VL-4B-Instruct
+    attn_implementation: flash_attention_2
+    vl_hidden_dim: 2048
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: True
+    max_seq_len: 1024
+    action_dim: 7
+    state_dim: 7
+    future_action_window_size: 15
+    action_horizon: 16  # matches the bridge/rt-1 16-step action chunk
+    past_action_window_size: 0
+    repeated_diffusion_steps: 8
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:    # DiT Transformer parameters
+      cross_attention_dim: 2048 # VLM hidden dim (auto-aligned at runtime)
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: "ada_norm"
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+
+  # LeWorldModel configuration (same as the QwenOFTLeWorldSim original)
+  leworld_model:
+    # Enable/disable LeWorldModel integration
+    enable: true
+
+    # Vision encoder configuration
+    encoder_scale: "tiny"  # Options: tiny, small, base, large
+    patch_size: 14
+    img_size: 224
+
+    # World model temporal configuration
+    history_size: 16  # Number of history frames for prediction
+    num_preds: 1     # Number of future frames to predict
+
+    # Embedding dimensions
+    embed_dim: 768
+    action_dim: 7
+    frameskip: 5
+
+    # Predictor architecture
+    predictor:
+      depth: 4
+      heads: 8
+      mlp_dim: 2048
+      dim_head: 64
+      dropout: 0.0
+      emb_dropout: 0.0
+
+    # Loss weights for joint training
+    loss_weights:
+      action_loss: 1.0        # Weight for the flow-matching action loss
+      world_model_loss: 0.1   # Weight for world model prediction loss
+      sigreg_loss: 0.01       # Weight for SIGReg regularization loss
+
+    # SIGReg regularizer configuration
+    sigreg:
+      knots: 17
+      num_proj: 1024
+
+datasets:
+  vlm_data:
+    dataset_py: vlm_datasets
+    dataformat: llava_json
+    dataset_use: sharegpt4v_coco
+    eval_dataset: sharegpt4v_coco
+    data_flatten: false
+    base_interval: 2
+    max_pixels: 307200
+    min_pixels: 784
+    model_max_length: 2048
+    model_type: qwen2.5vl
+    per_device_batch_size: 4
+
+  vla_data:
+    dataset_py: lerobot_datasets
+    include_state: false
+    data_root_dir: /H20_vepfs/liulin/starVLA/datasets/OXE_LEROBOT
+    data_mix: bridge_rt_1 # bridge_rt_1
+    action_type: delta_ee
+    CoT_prompt: "Your task is {instruction}. To identify the key objects for your task. Locate their bounding boxes in [x1,y1,x2,y2] format."
+    per_device_batch_size: 16
+    load_all_data_for_training: true
+    obs_image_size: [224, 224]
+    video_backend: torchvision_av
+    # 17-frame observation window (= leworld_model.history_size + num_preds)
+    # comes from the SimplerEnv data_registry data_config.py
+    # (examples/SimplerEnv/train_files/data_registry/data_config.py sets
+    # observation_indices = list(range(17)) for oxe_bridge / oxe_rt1):
+    # frames 0..16 aligned with the 16-step action chunk, so the world model
+    # learns next-frame prediction. No override needed here.
+
+trainer:
+  max_train_steps: 100000
+  num_warmup_steps: 5000
+  save_interval: 5000
+  eval_interval: 100
+  learning_rate:
+    base: 1e-05
+    qwen_vl_interface: 1.0e-05
+    action_model: 1.0e-04
+    leworld_model: 5.0e-5   # all JEPA components live under model.leworld_model
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 5.0e-07
+  freeze_modules: ''
+  loss_scale:
+    vla: 1.0
+    vlm: 0.1
+  max_grad_norm: 1.0
+  weight_decay: 0.0
+  logging_frequency: 10
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
