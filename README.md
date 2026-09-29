@@ -1,4 +1,4 @@
-# Custom-Scene Robustness Benchmark (starVLA × LIBERO)
+# Our team will release all the scenes and all the data and all you need on 2026/10/20! Please give me some time!
 
 Evaluation pipeline for benchmarking vision-language-action (VLA) policies on **your own
 LIBERO scenes** under a controlled robustness protocol: every rollout gets a fresh small
